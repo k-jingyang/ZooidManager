@@ -319,7 +319,11 @@ bool ZooidManager::receiveClientInstructions() {
                                 destination.x = (destination.x > dimensionX - robotDiameter) ? dimensionX - robotDiameter : destination.x;
                                 destination.y = (destination.y < robotDiameter) ? robotDiameter : destination.y;
                                 destination.y = (destination.y > dimensionY - robotDiameter) ? dimensionY - robotDiameter : destination.y;
+								
+								myDestinationX[tmpId] = (int)receivedZooids[i]["des"][2].GetInt();
+								myDestinationY[tmpId] = (int)receivedZooids[i]["des"][3].GetInt();
 
+								
                                 if (destination == it->getAssociatedZooid()->getPosition())
                                     it->setPosition(destination + 0.0001f);
                                 else
@@ -502,18 +506,18 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
 	
 	ZooidReceiver* r = myReceivers[0];
 	r->sendUSB(TYPE_ROBOT_POSITION, 0, sizeof(positionMessage), (uint8_t *)&positionMessage);*/
-
+	
 	PositionControlMessage msg;
 	
-    if (id >= 0 && id < myZooids.size()) {
+    if (id >= 0 && id < myZooids.size() && x>0 && y>0) {
         float tmpX = x, tmpY = y;
         if (tmpX > dimensionX) tmpX = dimensionX;
         if (tmpX < 0.0f) tmpX = 0.0f;
         if (tmpY > dimensionY) tmpY = dimensionY;
         if (tmpY < 0.0f) tmpX = 0.0f;
 
-		msg.positionX = (uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX);
-		msg.positionY = (uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
+		msg.positionX = x;//300;//(uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX);
+		msg.positionY = y;//500;//(uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
         msg.colorRed = color.r;
         msg.colorGreen = color.g;
         msg.colorBlue = color.b;
@@ -525,14 +529,41 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
 		//ZooidReceiver* r = retrieveReceiver(id);
 
 		ZooidReceiver* r = myReceivers[0];
-        if (r)
+        if (r && simulationMode==NoPlanning)
             r->sendUSB(TYPE_ROBOT_POSITION, myZooids[id].getId(), sizeof(msg), (uint8_t *)&msg);
 		
         //        else
         //            cout<<"Matching receiver missing!"<<endl;
     }
-	
+	/*
+	PositionControlMessage msg;
 
+	if (id >= 0 && id < myZooids.size()) {
+		float tmpX = x, tmpY = y;
+		if (tmpX > dimensionX) tmpX = dimensionX;
+		if (tmpX < 0.0f) tmpX = 0.0f;
+		if (tmpY > dimensionY) tmpY = dimensionY;
+		if (tmpY < 0.0f) tmpX = 0.0f;
+
+		msg.positionX = 300;//(uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX);
+		msg.positionY = 300;//(uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
+		msg.colorRed = color.r;
+		msg.colorGreen = color.g;
+		msg.colorBlue = color.b;
+		msg.orientation = (uint16_t)(orientation * 100.0f);
+		msg.preferredSpeed = (uint8_t)preferredSpeed;
+		msg.isFinalGoal = true;//isFinalGoal;
+		msg.empty = 0xff;
+
+		//ZooidReceiver* r = retrieveReceiver(id);
+
+		ZooidReceiver* r = myReceivers[0];
+		if (r && simulationMode == NoPlanning)
+			r->sendUSB(TYPE_ROBOT_POSITION, myZooids[id].getId(), sizeof(msg), (uint8_t *)&msg);
+
+		//        else
+		//            cout<<"Matching receiver missing!"<<endl;
+	}*/
 }
 
 //--------------------------------------------------------------
@@ -564,8 +595,10 @@ void ZooidManager::sendRobotsOrders() {
 			// Enters here when a zooid is under the projector
             else if (mode == NoPlanning) {
                 controlRobotPosition(myZooids[i].getId(),
-                                     retrieveAssociatedGoal(i)->getPosition().x,
-                                     retrieveAssociatedGoal(i)->getPosition().y,
+								
+									 myDestinationX[i], myDestinationY[i],
+                                     //retrieveAssociatedGoal(i)->getPosition().x,
+                                     //retrieveAssociatedGoal(i)->getPosition().y,
                                      //                                             simulator.getGoalPosition(simulator.getAgentGoal(myZooids[i].getId())).getX(),
                                      //                                             simulator.getGoalPosition(simulator.getAgentGoal(myZooids[i].getId())).getY(),
                                      myZooids[i].getColor(),

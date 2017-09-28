@@ -32,6 +32,8 @@ private:
     hrvo::Simulator simulator;
     vector<ZooidGoal> myGoals;
     vector<Zooid> myZooids;
+	int myDestinationX[NB_ROBOTS];
+	int myDestinationY[NB_ROBOTS];
 
     vector<ZooidReceiver*> myReceivers;
     bool receiverConnected;
