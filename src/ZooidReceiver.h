@@ -86,6 +86,7 @@ public:
     unsigned int availableMessages();
     bool isDataReadyToSend();
     int getId();
+	void setId(int id);
 
     uint8_t* getLastData();
     void reset();

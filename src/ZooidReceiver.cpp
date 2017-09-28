@@ -52,10 +52,10 @@ bool ZooidReceiver::init() {
     vector<ofSerialDeviceInfo> devices = serialPort.getDeviceList();
     for (int i = 0; i < devices.size(); i++) {
 #ifdef TARGET_WIN32
-        return connect(devices[i].getDevicePath(), 9600);
+        return connect(devices[i].getDevicePath(), 115200);
 #else
         if (devices[i].getDeviceName().find("tty.usbmodem") != -1) {
-            return connect(devices[i].getDevicePath(), 9600);
+            return connect(devices[i].getDevicePath(), 115200);
         }
 #endif
     }
@@ -64,7 +64,8 @@ bool ZooidReceiver::init() {
 
 //--------------------------------------------------------------
 bool ZooidReceiver::init(string descriptor) {
-    return connect(descriptor, 9600);
+	receiverId = 250;
+    return connect(descriptor, 115200);
 }
 
 //--------------------------------------------------------------
@@ -99,13 +100,15 @@ bool ZooidReceiver::connect(int deviceId, int baudrate) {
 //--------------------------------------------------------------
 bool ZooidReceiver::connect(string description, int baudrate) {
     if (serialPort.setup(description, baudrate)) {
+
+		/*
         serialPort.writeBytes((unsigned char*)HANDSHAKE_REQUEST, sizeof(HANDSHAKE_REQUEST));
         long timeOut = ofGetElapsedTimeMillis();
 		int x = serialPort.available();
-        while((serialPort.available() <  sizeof(HANDSHAKE_REPLY))){
+        while((serialPort.available() < sizeof(HANDSHAKE_REPLY))){
             long t = ofGetElapsedTimeMillis() - timeOut;
 			int x = serialPort.available();
-			if(t > 2000){
+			if(t > 10000){
                 serialPort.close();
                 return false;
             }
@@ -113,13 +116,18 @@ bool ZooidReceiver::connect(string description, int baudrate) {
         
         uint8_t *buffer = new uint8_t[serialPort.available()];
         serialPort.readBytes(buffer, serialPort.available());
+		//Sleep(10000);
         
         if(strcmp((char*)buffer, (char*)HANDSHAKE_REPLY) == 0) {
             receivingThread = thread(&ZooidReceiver::usbReceivingRoutine, this);
             processingThread = thread(&ZooidReceiver::processIncomingData, this);
             sendingThread = thread(&ZooidReceiver::usbSendingRoutine, this);
             return true;
-        }
+        }*/
+		receivingThread = thread(&ZooidReceiver::usbReceivingRoutine, this);
+		processingThread = thread(&ZooidReceiver::processIncomingData, this);
+		sendingThread = thread(&ZooidReceiver::usbSendingRoutine, this);
+		return true;
     }
     return false;
 }
@@ -270,6 +278,11 @@ Message ZooidReceiver::getLastMessage() {
 //--------------------------------------------------------------
 int ZooidReceiver::getId() {
     return receiverId;
+}
+
+//--------------------------------------------------------------
+void ZooidReceiver::setId(int id) {
+	receiverId = id;
 }
 
 //--------------------------------------------------------------

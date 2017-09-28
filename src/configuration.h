@@ -31,7 +31,8 @@
 #define goalRadius                          (0.4f*robotRadius)       //0.25 * radius
 
 #define updateFrequency				        30.0f
-#define updateTimestep						(1000.0f / updateFrequency) // 0.050f// Simulation Time Step32
+#define updateTimestep						(1000.0f / updateFrequency) //(1000.0f / updateFrequency) // 0.050f// Simulation Time Step32
+#define updateTimestep2						(3000.0f / updateFrequency) 
 #define timeToOrientation                   3.5f*(float)(updateTimestep)/1000.0f       //3.5f * timeStep
 
 

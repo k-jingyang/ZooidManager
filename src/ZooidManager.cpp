@@ -78,7 +78,7 @@ bool ZooidManager::initNetwork() {
 
 //--------------------------------------------------------------
 bool ZooidManager::initSimulation() {
-    assignmentMode = OptimalAssignment;
+	assignmentMode = NaiveAssignment;//OptimalAssignment;
     simulationMode = On;
 
     kSpeed = 0.35f;
@@ -104,6 +104,7 @@ bool ZooidManager::initZooidReceivers() {
         if (myReceivers.size() < receiversToConnect) {
             ZooidReceiver* z = new ZooidReceiver();
             if (z->init(serialPorts[i]) == true) {
+				//z->setId(0); //Assuming there's only 1 zooid receiver
                 myReceivers.push_back(z);
 
                 // NEED THIS SLEEP TO RECEIVE THE HANDSHAKE RESPONSE, DONT KNOW WHY -- FIGURE IT OUT
@@ -132,7 +133,7 @@ void ZooidManager::update() {
 
         float elapsedTime = (float)(ofGetElapsedTimeMicros() - previousTimestep) / 1000.0f;
 
-        if (elapsedTime >= updateTimestep) {
+        if (elapsedTime >= updateTimestep2) {
             runSimulation();
             sendRobotsOrders();
             sendClientInformation();
@@ -479,7 +480,9 @@ void ZooidManager::controlRobotSpeed(int id, int8_t motor1, int8_t motor2, ofCol
         buffer[3] = color.g;
         buffer[4] = color.b;
 
-        ZooidReceiver* r = retrieveReceiver(id);
+        //ZooidReceiver* r = retrieveReceiver(id);
+
+		ZooidReceiver* r = myReceivers[0];
         if (r)
             r->sendUSB(TYPE_MOTORS_VELOCITY, myZooids[id].getId(), sizeof(buffer), (uint8_t *)&buffer[0]);
         else
@@ -487,10 +490,21 @@ void ZooidManager::controlRobotSpeed(int id, int8_t motor1, int8_t motor2, ofCol
     }
 }
 
+
 //--------------------------------------------------------------
 void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor color, float orientation, float preferredSpeed, bool isFinalGoal) {
-    PositionControlMessage msg;
+    
+	/*
+	PositionControlMessage positionMessage;
+	positionMessage.positionX = 300;
+	positionMessage.positionY = 300;
+	positionMessage.isFinalGoal = true;
+	
+	ZooidReceiver* r = myReceivers[0];
+	r->sendUSB(TYPE_ROBOT_POSITION, 0, sizeof(positionMessage), (uint8_t *)&positionMessage);*/
 
+	PositionControlMessage msg;
+	
     if (id >= 0 && id < myZooids.size()) {
         float tmpX = x, tmpY = y;
         if (tmpX > dimensionX) tmpX = dimensionX;
@@ -498,22 +512,27 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
         if (tmpY > dimensionY) tmpY = dimensionY;
         if (tmpY < 0.0f) tmpX = 0.0f;
 
-        msg.positionX = (uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX);
-        msg.positionY = (uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
+		msg.positionX = (uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX);
+		msg.positionY = (uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
         msg.colorRed = color.r;
         msg.colorGreen = color.g;
         msg.colorBlue = color.b;
         msg.orientation = (uint16_t)(orientation * 100.0f);
         msg.preferredSpeed = (uint8_t)preferredSpeed;
-        msg.isFinalGoal = isFinalGoal;
+		msg.isFinalGoal = true;//isFinalGoal;
         msg.empty = 0xff;
 
-        ZooidReceiver* r = retrieveReceiver(id);
+		//ZooidReceiver* r = retrieveReceiver(id);
+
+		ZooidReceiver* r = myReceivers[0];
         if (r)
             r->sendUSB(TYPE_ROBOT_POSITION, myZooids[id].getId(), sizeof(msg), (uint8_t *)&msg);
+		
         //        else
         //            cout<<"Matching receiver missing!"<<endl;
     }
+	
+
 }
 
 //--------------------------------------------------------------
@@ -542,6 +561,7 @@ void ZooidManager::sendRobotsOrders() {
                                      myZooids[i].getSpeed(),
                                      myZooids[i].isGoalReached());
             }
+			// Enters here when a zooid is under the projector
             else if (mode == NoPlanning) {
                 controlRobotPosition(myZooids[i].getId(),
                                      retrieveAssociatedGoal(i)->getPosition().x,
@@ -756,7 +776,7 @@ ZooidGoal* ZooidManager::retrieveAssociatedGoal(unsigned int zooidId) {
     if (zooidId < myZooids.size()) {
         auto it = find_if(myGoals.begin(), myGoals.end(), [&zooidId](ZooidGoal &g) { return g.getAssociatedZooid()->getId() == zooidId; });
         if (it != myGoals.end()) {
-            return &myGoals[it->getId()];
+            return &myGoals[it->getId()]; 
         }
     }
     return &myGoals[0];
