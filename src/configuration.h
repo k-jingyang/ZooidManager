@@ -12,8 +12,8 @@
 #define NB_ROBOTS                           20
 #define NB_ROBOTS_PER_RECEIVER              20
 
-#define coordinatesMinX                     70.0f
-#define coordinatesMaxX                     953.0f
+#define coordinatesMinX                     250.0f
+#define coordinatesMaxX                     768.0f
 #define coordinatesMinY                     232.0f
 #define coordinatesMaxY                     790.0f
 
@@ -50,7 +50,8 @@ enum AssignmentMode{
 typedef struct {
     uint8_t assignmentMode;
     unsigned int nbRobots;
-}UdpHeader;
+}
+Header;
 
 
 #endif /* configuration_h */

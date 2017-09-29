@@ -387,6 +387,11 @@ bool ZooidManager::sendClientInformation() {
         writer.StartArray();
         writer.Double(dimensionX);
         writer.Double(dimensionY);
+		writer.Double(coordinatesMinX);
+		writer.Double(coordinatesMaxX);
+		writer.Double(coordinatesMinY);
+		writer.Double(coordinatesMaxY);
+
         writer.EndArray();
 
         writer.Key("zoo");          //array of zooids
@@ -498,15 +503,6 @@ void ZooidManager::controlRobotSpeed(int id, int8_t motor1, int8_t motor2, ofCol
 //--------------------------------------------------------------
 void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor color, float orientation, float preferredSpeed, bool isFinalGoal) {
     
-	/*
-	PositionControlMessage positionMessage;
-	positionMessage.positionX = 300;
-	positionMessage.positionY = 300;
-	positionMessage.isFinalGoal = true;
-	
-	ZooidReceiver* r = myReceivers[0];
-	r->sendUSB(TYPE_ROBOT_POSITION, 0, sizeof(positionMessage), (uint8_t *)&positionMessage);*/
-	
 	PositionControlMessage msg;
 	
     if (id >= 0 && id < myZooids.size() && x>0 && y>0) {
@@ -516,8 +512,8 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
         if (tmpY > dimensionY) tmpY = dimensionY;
         if (tmpY < 0.0f) tmpX = 0.0f;
 
-		msg.positionX = x;//300;//(uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX);
-		msg.positionY = y;//500;//(uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
+		msg.positionX = x;// (uint16_t)ofMap(tmpX, dimensionX, 0.0f, 0.0f, dimensionX);//x;//300;//(uint16_t)ofMap(tmpX, 0.0f, dimensionX, coordinatesMinX, coordinatesMaxX)
+		msg.positionY = y;// (uint16_t)ofMap(tmpY, dimensionY, 0.0f, 0.0f, dimensionY);//y;//500;//(uint16_t)ofMap(tmpY, 0.0f, dimensionY, coordinatesMinY, coordinatesMaxY);
         msg.colorRed = color.r;
         msg.colorGreen = color.g;
         msg.colorBlue = color.b;
