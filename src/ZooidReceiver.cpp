@@ -219,6 +219,7 @@ void ZooidReceiver::usbSendingRoutine() {
                         else
                             bufferOut.erase(bufferOut.begin(), bufferOut.begin() + 63);
                         bytesToSend -= 63;
+						Sleep(100);
                     }
                 }
             }

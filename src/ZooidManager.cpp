@@ -505,7 +505,7 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
     
 	PositionControlMessage msg;
 	
-    if (id >= 0 && id < myZooids.size() && x>0 && y>0) {
+    if (id >= 0 && id < myZooids.size()){// && x>0 && y>0) {
         float tmpX = x, tmpY = y;
         if (tmpX > dimensionX) tmpX = dimensionX;
         if (tmpX < 0.0f) tmpX = 0.0f;
@@ -526,8 +526,8 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
 
 		ZooidReceiver* r = myReceivers[0];
         if (r && simulationMode==NoPlanning)
-            r->sendUSB(TYPE_ROBOT_POSITION, myZooids[id].getId(), sizeof(msg), (uint8_t *)&msg);
-		
+			//myZooids[id].getId()
+            r->sendUSB(TYPE_ROBOT_POSITION, id , sizeof(msg), (uint8_t *)&msg);
         //        else
         //            cout<<"Matching receiver missing!"<<endl;
     }
@@ -591,7 +591,6 @@ void ZooidManager::sendRobotsOrders() {
 			// Enters here when a zooid is under the projector
             else if (mode == NoPlanning) {
                 controlRobotPosition(myZooids[i].getId(),
-								
 									 myDestinationX[i], myDestinationY[i],
                                      //retrieveAssociatedGoal(i)->getPosition().x,
                                      //retrieveAssociatedGoal(i)->getPosition().y,
@@ -601,6 +600,7 @@ void ZooidManager::sendRobotsOrders() {
                                      retrieveAssociatedGoal(i)->getOrientation(),
                                      myZooids[i].getSpeed(),
                                      myZooids[i].isGoalReached());
+				//myZooids[]
             }
         }
         myReceivers[j]->setReadyToSend();
