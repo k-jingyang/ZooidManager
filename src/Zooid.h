@@ -29,6 +29,7 @@ private:
 	unsigned int batteryLevel;
     unsigned int speed;
     bool activated;
+	bool updated;
 
 	void setPosition(ofVec2f _pos);
 	void setPosition(float _x, float _y);
@@ -43,6 +44,8 @@ private:
 	void activate();
 	void deactivate();
     void setSpeed(unsigned int _speed);
+	void setUpdated(bool updated);
+
     
 public:
 	friend class ZooidManager;
@@ -68,6 +71,7 @@ public:
 	unsigned int getBatteryLevel();
     bool isActivated();
     unsigned int getSpeed();
+	bool getUpdated();
 
     bool isTouched();
     bool isBlinded();

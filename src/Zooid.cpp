@@ -21,6 +21,7 @@ Zooid::Zooid() {
     speed = 100;
     goal = NULL;
     activated = true;
+	updated = false;
 }
 
 //--------------------------------------------------------------
@@ -36,6 +37,7 @@ Zooid::Zooid(float _radius, ofVec2f _position) {
     id = 0;
     goal = NULL;
     activated = true;
+	updated = false;
 }
 
 //--------------------------------------------------------------
@@ -185,6 +187,13 @@ void Zooid::setSpeed(unsigned int _speed) {
 }
 
 //--------------------------------------------------------------
+void Zooid::setUpdated(bool _updated) {
+	updated = _updated;
+}
+
+
+
+//--------------------------------------------------------------
 unsigned int Zooid::getSpeed() {
     return speed;
 }
@@ -207,6 +216,10 @@ bool Zooid::isTapped() {
 //--------------------------------------------------------------
 bool Zooid::isShaken() {
     return (state & 8) > 0;
+}
+
+bool Zooid::getUpdated() {
+	return updated;
 }
 
 //--------------------------------------------------------------

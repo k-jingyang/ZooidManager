@@ -308,10 +308,12 @@ bool ZooidManager::receiveClientInstructions() {
 
                     auto it = find_if(myGoals.begin(), myGoals.end(),
                                       [&tmpId](ZooidGoal &g) { return g.getId() == tmpId; });
+					myZooids[tmpId].setUpdated(true);
                     if (it != myGoals.end()) {
 
                         unique_lock<mutex> lock(valuesMutex);
                         {
+							
                             if (receivedZooids[i].HasMember("des")) {
                                 ofVec2f destination((float)receivedZooids[i]["des"][0].GetDouble(), (float)receivedZooids[i]["des"][1].GetDouble());
 
@@ -590,17 +592,19 @@ void ZooidManager::sendRobotsOrders() {
             }
 			// Enters here when a zooid is under the projector
             else if (mode == NoPlanning) {
-                controlRobotPosition(myZooids[i].getId(),
-									 myDestinationX[i], myDestinationY[i],
-                                     //retrieveAssociatedGoal(i)->getPosition().x,
-                                     //retrieveAssociatedGoal(i)->getPosition().y,
-                                     //                                             simulator.getGoalPosition(simulator.getAgentGoal(myZooids[i].getId())).getX(),
-                                     //                                             simulator.getGoalPosition(simulator.getAgentGoal(myZooids[i].getId())).getY(),
-                                     myZooids[i].getColor(),
-                                     retrieveAssociatedGoal(i)->getOrientation(),
-                                     myZooids[i].getSpeed(),
-                                     myZooids[i].isGoalReached());
-				//myZooids[]
+				if (myZooids[i].getUpdated()){
+					controlRobotPosition(myZooids[i].getId(),
+										 myDestinationX[i], myDestinationY[i],
+										 //retrieveAssociatedGoal(i)->getPosition().x,
+										 //retrieveAssociatedGoal(i)->getPosition().y,
+										 //                                             simulator.getGoalPosition(simulator.getAgentGoal(myZooids[i].getId())).getX(),
+										 //                                             simulator.getGoalPosition(simulator.getAgentGoal(myZooids[i].getId())).getY(),
+										 myZooids[i].getColor(),
+										 retrieveAssociatedGoal(i)->getOrientation(),
+										 myZooids[i].getSpeed(),
+										 myZooids[i].isGoalReached());
+				}
+				myZooids[i].setUpdated(false);
             }
         }
         myReceivers[j]->setReadyToSend();

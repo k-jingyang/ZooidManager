@@ -12,9 +12,9 @@
 #define NB_ROBOTS                           20
 #define NB_ROBOTS_PER_RECEIVER              20
 
-#define coordinatesMinX                     250.0f
-#define coordinatesMaxX                     768.0f
-#define coordinatesMinY                     232.0f
+#define coordinatesMinX                     300.0f//250.0f
+#define coordinatesMaxX                     750.0f//768.0f
+#define coordinatesMinY                     250.0f//232.0f
 #define coordinatesMaxY                     790.0f
 
 #define dimensionX                          0.8128f
