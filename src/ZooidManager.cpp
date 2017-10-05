@@ -342,6 +342,9 @@ bool ZooidManager::receiveClientInstructions() {
                                 tmpOrientation = (tmpOrientation < -360.0f) ? -360.0f : tmpOrientation;
                                 it->setOrientation(tmpOrientation);
                             }
+							else {
+								ignoreOrientation[tmpId] = true;
+							}
 
                             if (receivedZooids[i].HasMember("rea"))
                                 it->setReassignable(receivedZooids[i]["rea"].GetBool());
@@ -503,7 +506,7 @@ void ZooidManager::controlRobotSpeed(int id, int8_t motor1, int8_t motor2, ofCol
 
 
 //--------------------------------------------------------------
-void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor color, float orientation, float preferredSpeed, bool isFinalGoal) {
+void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor color, float orientation, float preferredSpeed, bool isFinalGoal, bool ignoreOrientation) {
     
 	PositionControlMessage msg;
 	
@@ -522,6 +525,7 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
         msg.orientation = (uint16_t)(orientation * 100.0f);
         msg.preferredSpeed = (uint8_t)preferredSpeed;
 		msg.isFinalGoal = true;//isFinalGoal;
+		msg.ignoreOrientation = ignoreOrientation;
         msg.empty = 0xff;
 
 		//ZooidReceiver* r = retrieveReceiver(id);
@@ -588,7 +592,7 @@ void ZooidManager::sendRobotsOrders() {
                                      myZooids[i].getColor(),
                                      retrieveAssociatedGoal(i)->getOrientation(),
                                      myZooids[i].getSpeed(),
-                                     myZooids[i].isGoalReached());
+                                     myZooids[i].isGoalReached(), ignoreOrientation[i]);
             }
 			// Enters here when a zooid is under the projector
             else if (mode == NoPlanning) {
@@ -602,7 +606,7 @@ void ZooidManager::sendRobotsOrders() {
 										 myZooids[i].getColor(),
 										 retrieveAssociatedGoal(i)->getOrientation(),
 										 myZooids[i].getSpeed(),
-										 myZooids[i].isGoalReached());
+										 myZooids[i].isGoalReached(), ignoreOrientation[i]);
 				}
 				myZooids[i].setUpdated(false);
             }

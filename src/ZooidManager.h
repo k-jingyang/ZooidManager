@@ -34,6 +34,7 @@ private:
     vector<Zooid> myZooids;
 	int myDestinationX[NB_ROBOTS];
 	int myDestinationY[NB_ROBOTS];
+	bool ignoreOrientation[NB_ROBOTS] = { 0 };
 
     vector<ZooidReceiver*> myReceivers;
     bool receiverConnected;
@@ -69,7 +70,7 @@ private:
     void readRobotsPositions();
     void sendRobotsOrders();
     void controlRobotSpeed(int id, int8_t motor1, int8_t motor2, ofColor color);
-    void controlRobotPosition(uint8_t id, float x, float y, ofColor color, float orientation, float preferredSpeed, bool isFinalGoal);
+    void controlRobotPosition(uint8_t id, float x, float y, ofColor color, float orientation, float preferredSpeed, bool isFinalGoal, bool ignoreOrientation);
     ZooidGoal* retrieveAssociatedGoal(unsigned int zooidId);
     ZooidReceiver* retrieveReceiver(unsigned int zooidId);
     

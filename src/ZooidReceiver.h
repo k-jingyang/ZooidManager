@@ -38,6 +38,7 @@ typedef struct {
 	int16_t orientation;
 	bool isFinalGoal;
 	uint8_t empty;
+	bool ignoreOrientation;
 }PositionControlMessage;
 
 typedef struct {
