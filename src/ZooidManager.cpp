@@ -510,7 +510,7 @@ void ZooidManager::controlRobotPosition(uint8_t id, float x, float y, ofColor co
     
 	PositionControlMessage msg;
 	
-    if (id >= 0 && id < myZooids.size()){// && x>0 && y>0) {
+    if (id >= 0 && id < myZooids.size() && x>0 && y>0) {
         float tmpX = x, tmpY = y;
         if (tmpX > dimensionX) tmpX = dimensionX;
         if (tmpX < 0.0f) tmpX = 0.0f;
